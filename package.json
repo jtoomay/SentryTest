@@ -1,0 +1,19 @@
+{
+  "name": "sentry-showcase",
+  "private": true,
+  "version": "1.0.0",
+  "description": "React + Express mock backend for demoing Sentry error tracking, tracing, replay, logs, feedback and crons.",
+  "workspaces": [
+    "client",
+    "server"
+  ],
+  "scripts": {
+    "dev": "concurrently -n server,client -c blue,magenta \"npm run dev -w server\" \"npm run dev -w client\"",
+    "build": "npm run build -w client",
+    "preview": "concurrently -n server,client -c blue,magenta \"npm run start -w server\" \"npm run preview -w client\"",
+    "typecheck": "npm run typecheck --workspaces"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.7"
+  }
+}
