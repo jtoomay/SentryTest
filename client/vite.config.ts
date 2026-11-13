@@ -23,13 +23,15 @@ export default defineConfig(({ mode }) => {
     ],
     // Replay + Feedback make the bundle ~550 kB; that's expected for this demo.
     build: { sourcemap: true, chunkSizeWarningLimit: 800 },
+    // '^/api/' (regex) instead of '/api' so a page load of the /api route is served by Vite,
+    // not forwarded to Express.
     server: {
       port: 5173,
-      proxy: { '/api': 'http://localhost:4000' },
+      proxy: { '^/api/': 'http://localhost:4000' },
     },
     preview: {
       port: 4173,
-      proxy: { '/api': 'http://localhost:4000' },
+      proxy: { '^/api/': 'http://localhost:4000' },
     },
   };
 });

@@ -1,0 +1,221 @@
+openapi: 3.1.0
+info:
+  title: Sentry Showcase Mock API
+  version: 1.0.0
+  description: >
+    The "happy path" endpoints served by server/src/routes/success.ts.
+    Orval reads this file to generate TypeScript types and TanStack Query hooks
+    for the client (see client/orval.config.ts).
+
+tags:
+  - name: products
+  - name: users
+  - name: orders
+
+paths:
+  /api/products:
+    get:
+      tags: [products]
+      operationId: listProducts
+      summary: List products, optionally filtered by category
+      parameters:
+        - name: category
+          in: query
+          required: false
+          schema:
+            type: string
+            example: peripherals
+      responses:
+        '200':
+          description: Products
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductListResponse'
+
+  /api/products/{id}:
+    get:
+      tags: [products]
+      operationId: getProduct
+      summary: Get one product
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: The product
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductResponse'
+        '404':
+          description: No such product
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/users/{id}:
+    get:
+      tags: [users]
+      operationId: getUser
+      summary: Get one user
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: u_1001
+      responses:
+        '200':
+          description: The user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '404':
+          description: No such user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/orders:
+    get:
+      tags: [orders]
+      operationId: listOrders
+      summary: List orders
+      responses:
+        '200':
+          description: Orders
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderListResponse'
+    post:
+      tags: [orders]
+      operationId: createOrder
+      summary: Create an order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateOrderRequest'
+      responses:
+        '201':
+          description: The created order
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderResponse'
+        '400':
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    Product:
+      type: object
+      required: [id, name, price, stock, category]
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        price: { type: number }
+        stock: { type: integer }
+        category: { type: string }
+
+    User:
+      type: object
+      required: [id, name, email, plan]
+      properties:
+        id: { type: string }
+        name: { type: string }
+        email: { type: string, format: email }
+        plan:
+          type: string
+          enum: [free, pro, enterprise]
+
+    OrderItem:
+      type: object
+      required: [productId, quantity]
+      properties:
+        productId: { type: integer }
+        quantity: { type: integer, minimum: 1 }
+
+    Order:
+      type: object
+      required: [id, userId, items, total, status, createdAt]
+      properties:
+        id: { type: integer }
+        userId: { type: string }
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/OrderItem' }
+        total: { type: number }
+        status:
+          type: string
+          enum: [pending, paid, shipped]
+        createdAt: { type: string, format: date-time }
+
+    CreateOrderRequest:
+      type: object
+      required: [userId, items]
+      properties:
+        userId: { type: string }
+        items:
+          type: array
+          minItems: 1
+          items: { $ref: '#/components/schemas/OrderItem' }
+
+    ProductListResponse:
+      type: object
+      required: [data, count]
+      properties:
+        data:
+          type: array
+          items: { $ref: '#/components/schemas/Product' }
+        count: { type: integer }
+
+    ProductResponse:
+      type: object
+      required: [data]
+      properties:
+        data: { $ref: '#/components/schemas/Product' }
+
+    UserResponse:
+      type: object
+      required: [data]
+      properties:
+        data: { $ref: '#/components/schemas/User' }
+
+    OrderListResponse:
+      type: object
+      required: [data, count]
+      properties:
+        data:
+          type: array
+          items: { $ref: '#/components/schemas/Order' }
+        count: { type: integer }
+
+    OrderResponse:
+      type: object
+      required: [data]
+      properties:
+        data: { $ref: '#/components/schemas/Order' }
+
+    ErrorResponse:
+      type: object
+      required: [error]
+      properties:
+        error: { type: string }
+        problems:
+          type: array
+          items: { type: string }

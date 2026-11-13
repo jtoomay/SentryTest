@@ -34,12 +34,12 @@ export interface ApiResult<T> {
   data: T;
 }
 
-export async function api<T = unknown>(path: string, init: RequestInit = {}): Promise<ApiResult<T>> {
+/** Shared by api() and Orval's mutator: adds the demo headers, sends the request, parses the body. */
+export async function request(path: string, init: RequestInit = {}): Promise<{ res: Response; body: unknown }> {
   const headers = new Headers(init.headers);
   if (init.body) headers.set('Content-Type', 'application/json');
   if (demoUserId) headers.set('x-demo-user', demoUserId);
 
-  const started = performance.now();
   const res = await fetch(path, { ...init, headers });
   const text = await res.text();
   let body: unknown = null;
@@ -48,6 +48,12 @@ export async function api<T = unknown>(path: string, init: RequestInit = {}): Pr
   } catch {
     body = text;
   }
+  return { res, body };
+}
+
+export async function api<T = unknown>(path: string, init: RequestInit = {}): Promise<ApiResult<T>> {
+  const started = performance.now();
+  const { res, body } = await request(path, init);
   if (!res.ok) throw new ApiError(res.status, body, path);
   return { status: res.status, durationMs: Math.round(performance.now() - started), data: body as T };
 }

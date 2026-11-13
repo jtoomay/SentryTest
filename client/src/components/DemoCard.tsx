@@ -2,6 +2,7 @@ import { useState, type ReactNode } from 'react';
 import * as Sentry from '@sentry/react';
 import { ApiError } from '../api/client';
 import { sentryEventUrl } from '../instrument';
+import { notifyError } from '../notify';
 
 export type Tone = 'success' | 'danger' | 'warning' | 'info';
 
@@ -65,6 +66,7 @@ export function DemoCard({ title, description, lookFor, actions, children }: Pro
         contexts: err instanceof ApiError ? { response: { status: err.status, url: err.url, body: err.body } } : undefined,
         tags: { demo: title },
       });
+      notifyError(err, { eventId });
       setOutcome({
         kind: 'error',
         label: action.label,

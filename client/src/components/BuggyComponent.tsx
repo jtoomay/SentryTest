@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import * as Sentry from '@sentry/react';
+import { notifyError } from '../notify';
 
 interface Cart {
   items: { name: string; price: number }[];
@@ -30,6 +31,7 @@ export function BuggyComponentDemo() {
         <Sentry.ErrorBoundary
           key={key}
           showDialog
+          onError={(error, _componentStack, eventId) => notifyError(error, { eventId, source: 'caught by ErrorBoundary' })}
           beforeCapture={(scope) => {
             scope.setTag('boundary', 'cart-summary');
             scope.setContext('cart', { state: 'not-loaded' });

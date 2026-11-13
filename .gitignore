@@ -5,3 +5,5 @@ dist/
 .env.*
 !.env.example
 .sentryclirc
+# Orval output, regenerated from server/openapi.yaml by `npm run api:gen -w client`
+client/src/api/generated/

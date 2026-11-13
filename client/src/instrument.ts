@@ -10,6 +10,7 @@ export const sentryConfig = {
   environment: env.VITE_SENTRY_ENV ?? 'development',
   release: env.VITE_SENTRY_RELEASE as string | undefined,
   org: env.VITE_SENTRY_ORG as string | undefined,
+  projectUrl: (env.VITE_SENTRY_PROJECT_URL as string | undefined) || null,
 };
 
 Sentry.init({

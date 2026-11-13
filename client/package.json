@@ -4,16 +4,23 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
+    "api:gen": "orval",
+    "predev": "npm run api:gen",
     "dev": "vite",
+    "prebuild": "npm run api:gen",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
+    "pretypecheck": "npm run api:gen",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@sentry/react": "^11.11.0",
+    "@tanstack/react-query": "^5.107.1",
+    "@tanstack/react-query-devtools": "^5.107.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-router-dom": "^6.30.6"
+    "react-router-dom": "^6.30.6",
+    "sonner": "^2.0.8"
   },
   "devDependencies": {
     "@sentry/vite-plugin": "^11.11.0",
@@ -21,6 +28,7 @@
     "@types/react": "^18.3.31",
     "@types/react-dom": "^18.3.7",
     "@vitejs/plugin-react": "^6.3.0",
+    "orval": "^7.13.2",
     "typescript": "^7.0.2",
     "vite": "^8.3.7"
   }
